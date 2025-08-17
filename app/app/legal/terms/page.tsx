@@ -1,0 +1,1 @@
+export default function Terms(){return(<div className='container py-8'><h1 className='text-2xl font-semibold mb-2'>Terms of Service</h1><p className='text-sm text-gray-500'>Use of this service is subject to these terms. Nudges are informational.</p></div>)}

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+PROJECT_NAME="${1:-arch-impacts}"
+vercel link --project "$PROJECT_NAME" --confirm || true
+for key in DATABASE_URL NEXT_PUBLIC_APP_URL OPENAI_API_KEY OPENAI_MODEL EMBEDDING_MODEL NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY CLERK_SECRET_KEY CLERK_WEBHOOK_SECRET RESEND_API_KEY TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM STRIPE_SECRET_KEY STRIPE_PRICE_PLUS STRIPE_PRICE_PREMIUM STRIPE_WEBHOOK_SECRET STRIPE_CUSTOMER_PORTAL_URL SENTRY_DSN; do val="$(printenv "$key")"; [ -n "$val" ] && echo "$val" | vercel env add "$key" production; done
+vercel --prod --confirm

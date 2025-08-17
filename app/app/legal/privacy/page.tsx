@@ -1,0 +1,1 @@
+export default function Privacy(){return(<div className='container py-8'><h1 className='text-2xl font-semibold mb-2'>Privacy Policy</h1><p className='text-sm text-gray-500'>We collect and process data only with your consent. You can export and delete your data anytime.</p></div>)}

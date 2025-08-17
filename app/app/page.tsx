@@ -1,0 +1,11 @@
+
+'use client';
+import React, { useState, useEffect } from 'react';
+function SourcesStrip({ query }: { query: string }) {
+  const [hits, setHits] = useState<any[]>([]);
+  useEffect(()=>{ (async()=>{ if (!query) return; const r = await fetch(`/api/rag/search?q=${encodeURIComponent(query)}`); if (r.ok) { const j = await r.json(); setHits(j.results||[]); } })() }, [query]);
+  if (!hits.length) return null;
+  return (<div className="mt-2 text-xs"><div className="text-gray-500 mb-1">Sources:</div><div className="flex flex-wrap gap-2">{hits.map((h:any,i:number)=>(<a key={h.id} className="underline" href={h.url||'#'} target="_blank" rel="noreferrer">[{i+1}] {h.title}</a>))}</div></div>);
+}
+export default function Home(){ const [messages,setMessages]=useState<{role:'user'|'assistant',content:string}[]>([]); const [input,setInput]=useState(''); const [lastUserQ,setLastUserQ]=useState(''); async function send(text:string){ const next=[...messages,{role:'user',content:text}]; setMessages(next); setLastUserQ(text); setInput(''); const cid=localStorage.getItem('conversationId')||undefined; const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:next,conversationId:cid})}); const headerId=res.headers.get('X-Conversation-Id'); if(headerId) localStorage.setItem('conversationId',headerId); const j=await res.json(); setMessages([...next,{role:'assistant',content:j.text}]); }
+  return (<div className="container py-8"><h1 className="text-2xl font-semibold mb-2">GENUINE™ Relationship Coach</h1><p className="text-sm text-gray-500 mb-4">Warm, encouraging, non-judgmental, and actionable.</p><div className="card p-4 min-h-[300px]">{messages.map((m,i)=>(<div key={i} className="mb-3"><div className="text-xs text-gray-500 mb-1">{m.role}</div><div className="whitespace-pre-wrap">{m.content}</div></div>))}</div><SourcesStrip query={lastUserQ} /><form className="mt-3 flex gap-2" onSubmit={(e)=>{e.preventDefault(); if(input.trim()) send(input.trim());}}><input className="flex-1 rounded-xl border border-gray-200 px-3 py-2" value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask about a relationship or next step…" /><button className="btn btn-primary" disabled={!input.trim()}>Send</button></form></div>); }
